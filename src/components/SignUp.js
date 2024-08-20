@@ -1,18 +1,31 @@
+// src/components/SignUp.js
+
 import React, { useState } from 'react';
 import { TextField, Button, Box, Container, Typography, Snackbar, Alert } from '@mui/material';
 import Google from '@mui/icons-material/Google';
+import { useNavigate } from 'react-router-dom';
 import supabase from '../supabaseClient';
+import bcrypt from 'bcryptjs'; // Import bcrypt for password hashing
 
 const SignUp = () => {
+  // State variables for handling user inputs and feedback
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  
+  // useNavigate hook from react-router-dom for navigation
+  const navigate = useNavigate();
 
+  // Function to handle the sign-up form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Sign up the user using Supabase Authentication
+    // Hash the user's password before sending it to the database
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // The second parameter "10" is the salt rounds, which controls the complexity of the hash.
+    
+    // Attempt to sign up the user using Supabase Authentication
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -23,6 +36,7 @@ const SignUp = () => {
       },
     });
 
+    // Handle any errors that occur during sign-up
     if (authError) {
       console.error('Error signing up:', authError.message);
       return;
@@ -30,40 +44,56 @@ const SignUp = () => {
 
     console.log('Sign up successful:', authData);
 
-    // If sign-up is successful, save the user info to the custom Users table
-    const { user } = authData;
-    const { data: userData, error: userError } = await supabase
-      .from('Users')
-      .insert([
-        {
-          auth_user_id: user.id,
-          username: username,
-          email: email,
-        },
-      ]);
+    // If sign-up is successful, proceed to insert the user's data into the custom Users table
+    if (authData.user) {
+      const { user } = authData;
 
-    if (userError) {
-      console.error('Error inserting user data:', userError.message);
-    } else {
-      console.log('User data inserted successfully:', userData);
+      // Insert user data into the custom Users table with the hashed password
+      const { data: userData, error: userError } = await supabase
+        .from('Users')
+        .insert([
+          {
+            id: user.id,  // Use the user's auth ID from Supabase
+            username: username,
+            iracing_name: '',  // Initially empty
+            email: email,
+            password_hash: hashedPassword,  // Store the hashed password
+          },
+        ]);
+
+      // Handle any errors that occur during the insertion
+      if (userError) {
+        console.error('Error inserting user data:', userError.message);
+      } else {
+        console.log('User data inserted successfully:', userData);
+      }
     }
 
-    // Show success message
+    // Show the success message and keep the user on the sign-up page
     setSnackbarOpen(true);
+
+    // Optionally redirect to sign-in or stay on the sign-up page
+    setTimeout(() => {
+      navigate('/signin');  // Redirect to sign-in page
+    }, 3000);  // 3-second delay for Snackbar to display
   };
 
+  // Function to handle Google sign-in
   const handleGoogleSignIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
     });
 
+    // Handle any errors that occur during Google sign-in
     if (error) {
       console.error('Error signing in with Google:', error.message);
     } else {
       console.log('Google sign in successful:', data);
+      navigate('/dashboard');  // Redirect to dashboard
     }
   };
 
+  // Function to close the Snackbar
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
@@ -129,14 +159,14 @@ const SignUp = () => {
         </Button>
       </Box>
 
-      {/* Snackbar for success message */}
+      {/* Snackbar to show success message */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
         <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-          Successfully signed up! Please check your email to verify that you have one...
+          Successfully signed up! Please check your email to verify your account.
         </Alert>
       </Snackbar>
     </Container>

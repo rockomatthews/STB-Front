@@ -1,16 +1,41 @@
+// src/index.js
+
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { ThemeProvider } from '@mui/material/styles';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import App from './App';
-import theme from './theme/theme';
 
-ReactDOM.render(
+// Define your custom MUI theme
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#FFFF00',
+    },
+    background: {
+      default: '#000000',
+      paper: '#000000',
+    },
+    text: {
+      primary: '#FFFFFF',
+    },
+  },
+});
+
+// Create the root element for React 18
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
+
+// Render the application
+root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );

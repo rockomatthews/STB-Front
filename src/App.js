@@ -1,30 +1,20 @@
-import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Home from './pages/Home';
+// src/App.js
 
-const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#FFFF00',
-    },
-    background: {
-      default: '#000000',
-      paper: '#000000',
-    },
-    text: {
-      primary: '#FFFFFF',
-    },
-  },
-});
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import SignIn from './components/SignIn';
+import SignUp from './components/SignUp';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Home />
-    </ThemeProvider>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Routes>
   );
 }
 
