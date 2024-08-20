@@ -1,21 +1,42 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Container, Typography } from '@mui/material';
 import Google from '@mui/icons-material/Google';
+import supabase from '../supabaseClient';
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement sign up logic
-    console.log('Sign up:', { username, email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username: username,
+        },
+      },
+    });
+
+    if (error) {
+      console.error('Error signing up:', error.message);
+    } else {
+      console.log('Sign up successful:', data);
+    }
   };
 
-  const handleGoogleSignIn = () => {
-    // TODO: Implement Google sign in logic
-    console.log('Sign in with Google');
+  const handleGoogleSignIn = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    });
+
+    if (error) {
+      console.error('Error signing in with Google:', error.message);
+    } else {
+      console.log('Google sign in successful:', data);
+    }
   };
 
   return (
