@@ -8,16 +8,12 @@ import supabase from '../supabaseClient';
 import CryptoJS from 'crypto-js'; // Import crypto-js for password hashing
 
 const SignUp = () => {
-  // State variables for handling user inputs and feedback
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  
-  // useNavigate hook from react-router-dom for navigation
   const navigate = useNavigate();
 
-  // Function to handle the sign-up form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -43,9 +39,12 @@ const SignUp = () => {
 
     console.log('Sign up successful:', authData);
 
-    // If sign-up is successful, proceed to insert the user's data into the custom users table
+    // Explicitly check if the user is authenticated
     if (authData.user) {
       const { user } = authData;
+
+      // Log the authenticated user ID to ensure it's being captured correctly
+      console.log('Authenticated user ID:', user.id);
 
       // Insert user data into the custom users table with the hashed password
       const { data: userData, error: userError } = await supabase
@@ -66,6 +65,8 @@ const SignUp = () => {
       } else {
         console.log('User data inserted successfully:', userData);
       }
+    } else {
+      console.error('User is not authenticated.');
     }
 
     // Show the success message and keep the user on the sign-up page
@@ -77,7 +78,6 @@ const SignUp = () => {
     }, 3000);  // 3-second delay for Snackbar to display
   };
 
-  // Function to handle Google sign-in
   const handleGoogleSignIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -92,7 +92,6 @@ const SignUp = () => {
     }
   };
 
-  // Function to close the Snackbar
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
