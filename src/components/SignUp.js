@@ -8,6 +8,7 @@ const SignUp = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [iracingName, setIracingName] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -18,30 +19,14 @@ const SignUp = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN') {
         try {
-          // Fetch the user's data
-          const { data: userData, error: fetchError } = await supabase
-            .from('users')
-            .select('username')
+          // Fetch the user's profile data
+          const { error: fetchError } = await supabase
+            .from('profiles')
+            .select('*')
             .eq('id', session.user.id)
             .single();
 
           if (fetchError) throw fetchError;
-
-          // If the user doesn't exist in the users table, insert them
-          if (!userData) {
-            const { error: insertError } = await supabase
-              .from('users')
-              .insert([
-                {
-                  id: session.user.id,
-                  username: session.user.user_metadata.full_name || session.user.email.split('@')[0],
-                  email: session.user.email,
-                  iracing_name: '',
-                }
-              ]);
-
-            if (insertError) throw insertError;
-          }
 
           setSnackbarMessage('Successfully signed in!');
           setSnackbarSeverity('success');
@@ -51,8 +36,8 @@ const SignUp = () => {
             navigate('/dashboard');
           }, 3000);
         } catch (error) {
-          console.error('Error updating user data:', error.message);
-          setSnackbarMessage(error.message || 'An error occurred while updating user data.');
+          console.error('Error fetching profile data:', error.message);
+          setSnackbarMessage(error.message || 'An error occurred while fetching profile data.');
           setSnackbarSeverity('error');
           setSnackbarOpen(true);
         }
@@ -77,11 +62,16 @@ const SignUp = () => {
         options: {
           data: {
             username: username,
+            iracing_name: iracingName,
           },
         },
       });
 
       if (error) throw error;
+
+      setSnackbarMessage('Successfully signed up! Please check your email to verify your account.');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
 
       // The onAuthStateChange listener will handle the rest
     } catch (error) {
@@ -160,6 +150,15 @@ const SignUp = () => {
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+        <TextField
+          margin="normal"
+          fullWidth
+          id="iracingName"
+          label="iRacing Name (optional)"
+          name="iracingName"
+          value={iracingName}
+          onChange={(e) => setIracingName(e.target.value)}
         />
         <Button
           type="submit"
