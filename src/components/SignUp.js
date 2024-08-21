@@ -17,16 +17,33 @@ const SignUp = () => {
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN') {
-        // User has successfully signed up and is now signed in
         try {
-          const { error } = await supabase
+          // Fetch the user's data
+          const { data: userData, error: fetchError } = await supabase
             .from('users')
-            .update({ username: username, iracing_name: '' })
-            .eq('id', session.user.id);
+            .select('username')
+            .eq('id', session.user.id)
+            .single();
 
-          if (error) throw error;
+          if (fetchError) throw fetchError;
 
-          setSnackbarMessage('Successfully signed up! Please check your email to verify your account.');
+          // If the user doesn't exist in the users table, insert them
+          if (!userData) {
+            const { error: insertError } = await supabase
+              .from('users')
+              .insert([
+                {
+                  id: session.user.id,
+                  username: session.user.user_metadata.full_name || session.user.email.split('@')[0],
+                  email: session.user.email,
+                  iracing_name: '',
+                }
+              ]);
+
+            if (insertError) throw insertError;
+          }
+
+          setSnackbarMessage('Successfully signed in!');
           setSnackbarSeverity('success');
           setSnackbarOpen(true);
 
@@ -45,7 +62,7 @@ const SignUp = () => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [username, navigate]);
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
