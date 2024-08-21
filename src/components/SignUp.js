@@ -5,7 +5,7 @@ import { TextField, Button, Box, Container, Typography, Snackbar, Alert } from '
 import Google from '@mui/icons-material/Google';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../supabaseClient';
-import bcrypt from 'bcryptjs'; // Import bcrypt for password hashing
+import CryptoJS from 'crypto-js'; // Import crypto-js for password hashing
 
 const SignUp = () => {
   // State variables for handling user inputs and feedback
@@ -21,9 +21,8 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Hash the user's password before sending it to the database
-    const hashedPassword = await bcrypt.hash(password, 10);
-    // The second parameter "10" is the salt rounds, which controls the complexity of the hash.
+    // Hash the user's password using crypto-js before sending it to the database
+    const hashedPassword = CryptoJS.SHA256(password).toString();
     
     // Attempt to sign up the user using Supabase Authentication
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -44,13 +43,13 @@ const SignUp = () => {
 
     console.log('Sign up successful:', authData);
 
-    // If sign-up is successful, proceed to insert the user's data into the custom Users table
+    // If sign-up is successful, proceed to insert the user's data into the custom users table
     if (authData.user) {
       const { user } = authData;
 
-      // Insert user data into the custom Users table with the hashed password
+      // Insert user data into the custom users table with the hashed password
       const { data: userData, error: userError } = await supabase
-        .from('Users')
+        .from('users') // Ensure this matches your actual table name in Supabase
         .insert([
           {
             id: user.id,  // Use the user's auth ID from Supabase
