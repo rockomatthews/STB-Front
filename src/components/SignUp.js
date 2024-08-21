@@ -1,20 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, Container, Typography, Snackbar, Alert } from '@mui/material';
 import Google from '@mui/icons-material/Google';
 import { useNavigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client using environment variables
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-// Check if the environment variables are set
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL or Anon Key is missing. Check your environment variables.');
-}
-
-// Create the Supabase client
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import supabase from '../supabaseClient'; // Ensure this path is correct
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
@@ -26,6 +14,39 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN') {
+        // User has successfully signed up and is now signed in
+        try {
+          const { error } = await supabase
+            .from('users')
+            .update({ username: username, iracing_name: '' })
+            .eq('id', session.user.id);
+
+          if (error) throw error;
+
+          setSnackbarMessage('Successfully signed up! Please check your email to verify your account.');
+          setSnackbarSeverity('success');
+          setSnackbarOpen(true);
+
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 3000);
+        } catch (error) {
+          console.error('Error updating user data:', error.message);
+          setSnackbarMessage(error.message || 'An error occurred while updating user data.');
+          setSnackbarSeverity('error');
+          setSnackbarOpen(true);
+        }
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [username, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -33,7 +54,7 @@ const SignUp = () => {
     setIsSubmitting(true);
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -43,35 +64,9 @@ const SignUp = () => {
         },
       });
 
-      if (authError) {
-        if (authError.status === 429) {
-          throw new Error('Too many signup attempts. Please try again later.');
-        }
-        throw authError;
-      }
+      if (error) throw error;
 
-      if (authData.user) {
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: authData.user.id,
-              username: username,
-              email: email,
-              iracing_name: '',
-            },
-          ]);
-
-        if (insertError) throw insertError;
-
-        setSnackbarMessage('Successfully signed up! Please check your email to verify your account.');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
-
-        setTimeout(() => {
-          navigate('/signin');
-        }, 3000);
-      }
+      // The onAuthStateChange listener will handle the rest
     } catch (error) {
       console.error('Error during sign up:', error.message);
       setSnackbarMessage(error.message || 'An error occurred during sign up.');
@@ -79,8 +74,6 @@ const SignUp = () => {
       setSnackbarOpen(true);
     } finally {
       setIsSubmitting(false);
-      // Implement a cooldown period
-      setTimeout(() => setIsSubmitting(false), 5000); // 5 second cooldown
     }
   };
 
@@ -95,7 +88,7 @@ const SignUp = () => {
 
       if (error) throw error;
 
-      navigate('/dashboard');
+      // The onAuthStateChange listener will handle the rest
     } catch (error) {
       console.error('Error signing in with Google:', error.message);
       setSnackbarMessage(error.message || 'An error occurred during Google sign in.');
