@@ -4,7 +4,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import axios from 'axios';
 
 // Use an environment variable for the backend URL
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://stb-back-etjo.onrender.com';
 
 const RealNameSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
