@@ -6,6 +6,7 @@ import { TextField, Button, Box, Container, Typography } from '@mui/material';
 import Google from '@mui/icons-material/Google';
 import supabase from '../supabaseClient';
 
+
 const SignIn = () => {
   // State variables to hold the email and password input by the user
   const [email, setEmail] = useState('');
@@ -18,34 +19,28 @@ const SignIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Call Supabase sign-in function with email and password
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-
-    // Check for errors during sign-in process
+  
     if (error) {
       console.error('Error signing in:', error.message);
     } else {
       console.log('Sign in successful:', data);
-      // Navigate to the Dashboard after successful sign-in
       navigate('/dashboard');
     }
   };
-
-  // Function to handle Google sign-in
+  
   const handleGoogleSignIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
     });
-
-    // Check for errors during Google sign-in process
+  
     if (error) {
       console.error('Error signing in with Google:', error.message);
     } else {
       console.log('Google sign in successful:', data);
-      // Navigate to the Dashboard after successful Google sign-in
       navigate('/dashboard');
     }
   };

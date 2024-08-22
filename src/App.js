@@ -1,19 +1,23 @@
-// src/App.js
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import theme from './theme/theme';  // Import the theme you've created
+import theme from './theme/theme';
 import Home from './pages/Home';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import Dashboard from './pages/Dashboard';
+import { initializeAuthRefresh } from './authService';
 
 function App() {
+  useEffect(() => {
+    const clearAuthRefresh = initializeAuthRefresh();
+    return () => clearAuthRefresh();
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline /> {/* This component helps in applying consistent baseline styles */}
+      <CssBaseline />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />

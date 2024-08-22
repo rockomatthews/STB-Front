@@ -25,16 +25,15 @@ const SignUp = () => {
             .select('*')
             .eq('id', session.user.id)
             .single();
-
+  
           if (fetchError) throw fetchError;
-
+  
           setSnackbarMessage('Successfully signed in!');
           setSnackbarSeverity('success');
           setSnackbarOpen(true);
-
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, 3000);
+  
+          // Navigate to Dashboard immediately
+          navigate('/dashboard');
         } catch (error) {
           console.error('Error fetching profile data:', error.message);
           setSnackbarMessage(error.message || 'An error occurred while fetching profile data.');
@@ -43,7 +42,7 @@ const SignUp = () => {
         }
       }
     });
-
+  
     return () => {
       authListener.subscription.unsubscribe();
     };

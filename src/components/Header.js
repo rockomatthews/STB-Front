@@ -28,6 +28,8 @@ const Header = ({ onMenuItemClick }) => {
     { text: 'Profile', icon: <PersonIcon /> },
     { text: 'iRacing Name Search', icon: <SearchIcon /> },
     { text: 'Search Official Races', icon: <SportsMotorsportsIcon /> },
+    { text: 'Bets', icon: <SportsMotorsportsIcon /> },
+    { text: 'Bet History', icon: <SportsMotorsportsIcon /> },
     { text: 'Favorites', icon: <StarIcon /> },
     { text: 'Logout', icon: <ExitToAppIcon /> },
   ];
