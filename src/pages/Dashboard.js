@@ -1,26 +1,31 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import RealNameSearch from '../components/RealNameSearch';
+import Favorites from '../components/Favorites';
 
 const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState('dashboard');
 
   const handleMenuItemClick = (menuItem) => {
-    if (menuItem === 'iRacing Name Search') {
-      setActiveComponent('realNameSearch');
-    } else {
-      setActiveComponent('dashboard');
+    switch (menuItem) {
+      case 'iRacing Name Search':
+        setActiveComponent('realNameSearch');
+        break;
+      case 'Favorites':
+        setActiveComponent('favorites');
+        break;
+      default:
+        setActiveComponent('dashboard');
     }
   };
 
-  // Define the styles for the content container
   const contentContainerStyle = {
-    marginTop: '64px', // This should match the height of your Header
+    marginTop: '64px',
     padding: '20px',
-    minHeight: 'calc(100vh - 64px)', // This ensures the content area takes up the full height of the viewport minus the header height
-    boxSizing: 'border-box', // This ensures padding is included in the height calculation
-    backgroundColor: '#000000', // Light grey background, you can adjust this as needed
-    overflowY: 'auto', // In case the content is taller than the viewport
+    minHeight: 'calc(100vh - 64px)',
+    boxSizing: 'border-box',
+    backgroundColor: '#000000',
+    overflowY: 'auto',
   };
 
   return (
@@ -31,13 +36,18 @@ const Dashboard = () => {
           <div>
             <h1 style={{ marginTop: 0, color: '#333' }}>Welcome to your Dashboard</h1>
             <p>This is where you can view all your important information and stats.</p>
-            {/* Add more dashboard content here */}
           </div>
         )}
         {activeComponent === 'realNameSearch' && (
           <div>
             <h2 style={{ marginTop: 0, color: '#333' }}>iRacing Name Search</h2>
             <RealNameSearch />
+          </div>
+        )}
+        {activeComponent === 'favorites' && (
+          <div>
+            <h2 style={{ marginTop: 0, color: '#333' }}>Favorites</h2>
+            <Favorites />
           </div>
         )}
       </div>

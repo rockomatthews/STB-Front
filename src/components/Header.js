@@ -26,15 +26,15 @@ const Header = ({ onMenuItemClick }) => {
     setIsDrawerOpen(false);
   };
 
-const menuItems = [
-  { text: 'Profile', icon: <PersonIcon sx={{ color: 'black' }} /> },
-  { text: 'iRacing Name Search', icon: <SearchIcon sx={{ color: 'black' }} /> },
-  { text: 'Search Official Races', icon: <FindInPageIcon sx={{ color: 'black' }} /> },
-  { text: 'Bets', icon: <SportsMotorsportsIcon sx={{ color: 'black' }} /> },
-  { text: 'Bet History', icon: <HistoryIcon sx={{ color: 'black' }} /> },
-  { text: 'Favorites', icon: <StarIcon sx={{ color: 'black' }} /> },
-  { text: 'Logout', icon: <ExitToAppIcon sx={{ color: 'black' }} /> },
-];
+  const menuItems = [
+    { text: 'Profile', icon: <PersonIcon sx={{ color: 'black' }} /> },
+    { text: 'iRacing Name Search', icon: <SearchIcon sx={{ color: 'black' }} /> },
+    { text: 'Search Official Races', icon: <FindInPageIcon sx={{ color: 'black' }} /> },
+    { text: 'Bets', icon: <SportsMotorsportsIcon sx={{ color: 'black' }} /> },
+    { text: 'Bet History', icon: <HistoryIcon sx={{ color: 'black' }} /> },
+    { text: 'Favorites', icon: <StarIcon sx={{ color: 'black' }} /> },
+    { text: 'Logout', icon: <ExitToAppIcon sx={{ color: 'black' }} /> },
+  ];
 
   const list = () => (
     <Box
