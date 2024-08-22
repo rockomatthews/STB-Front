@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Typography, Paper } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { supabase } from '../supabaseClient'; // Ensure this path is correct
+import supabase from '../supabaseClient';
 
 const Favorites = () => {
   const [favorites, setFavorites] = useState([]);
