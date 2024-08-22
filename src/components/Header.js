@@ -8,7 +8,7 @@ import SportsMotorsportsIcon from '@mui/icons-material/SportsMotorsports';
 import StarIcon from '@mui/icons-material/Star';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
-const Header = () => {
+const Header = ({ onMenuItemClick }) => {
   const theme = useTheme();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -17,6 +17,11 @@ const Header = () => {
       return;
     }
     setIsDrawerOpen(open);
+  };
+
+  const handleMenuItemClick = (text) => {
+    onMenuItemClick(text);
+    setIsDrawerOpen(false);
   };
 
   const menuItems = [
@@ -36,7 +41,7 @@ const Header = () => {
     >
       <List>
         {menuItems.map((item, index) => (
-          <ListItem button key={item.text}>
+          <ListItem button key={item.text} onClick={() => handleMenuItemClick(item.text)}>
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>

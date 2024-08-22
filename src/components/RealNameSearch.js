@@ -15,7 +15,6 @@ const RealNameSearch = () => {
     setSearchResult(null);
 
     try {
-      // Replace this URL with your actual backend API endpoint
       const response = await axios.get(`http://your-backend-url/api/search-iracing-name?name=${searchTerm}`);
       
       if (response.data.exists) {
