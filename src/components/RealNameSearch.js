@@ -3,6 +3,9 @@ import { TextField, Button, Box, Typography, CircularProgress, Paper } from '@mu
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import axios from 'axios';
 
+// Use an environment variable for the backend URL
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 const RealNameSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResult, setSearchResult] = useState(null);
@@ -15,7 +18,7 @@ const RealNameSearch = () => {
     setSearchResult(null);
 
     try {
-      const response = await axios.get(`http://your-backend-url/api/search-iracing-name?name=${searchTerm}`);
+      const response = await axios.get(`${BACKEND_URL}/api/search-iracing-name?name=${encodeURIComponent(searchTerm)}`);
       
       if (response.data.exists) {
         setSearchResult({ name: response.data.name, exists: true });
