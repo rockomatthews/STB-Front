@@ -77,14 +77,14 @@ const RealNameSearch = () => {
           .insert({
             user_id: user.id,
             name: searchResult.name,
-            iracing_id: searchResult.id
+            iracing_id: searchResult.id.toString()
           });
 
         if (error) {
           console.error('Error adding favorite:', error);
         } else {
           setIsFavorite(true);
-          setTimeout(() => setShowResult(false), 1000); // Hide result after 1 second
+          setTimeout(() => setShowResult(false), 1000);
         }
       }
     }
@@ -100,7 +100,7 @@ const RealNameSearch = () => {
           fullWidth
           variant="outlined"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(event) => setSearchTerm(event.target.value)}
           placeholder="Enter a real name"
         />
         <Button
