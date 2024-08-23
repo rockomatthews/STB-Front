@@ -3,7 +3,7 @@ import { TextField, Button, Box, Typography, CircularProgress, Paper, IconButton
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
 import axios from 'axios';
-import { supabase } from '../supabaseClient'; // Ensure this path is correct
+import supabase from '../supabaseClient'; // Updated import statement
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://stb-back-etjo.onrender.com';
 

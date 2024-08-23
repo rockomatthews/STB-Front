@@ -26,6 +26,7 @@ const Dashboard = () => {
     boxSizing: 'border-box',
     backgroundColor: '#000000',
     overflowY: 'auto',
+    color: '#FFFFFF', // Changed text color to white for better contrast
   };
 
   return (
@@ -34,19 +35,19 @@ const Dashboard = () => {
       <div style={contentContainerStyle}>
         {activeComponent === 'dashboard' && (
           <div>
-            <h1 style={{ marginTop: 0, color: '#333' }}>Welcome to your Dashboard</h1>
+            <h1 style={{ marginTop: 0 }}>Welcome to your Dashboard</h1>
             <p>This is where you can view all your important information and stats.</p>
           </div>
         )}
         {activeComponent === 'realNameSearch' && (
           <div>
-            <h2 style={{ marginTop: 0, color: '#333' }}>iRacing Name Search</h2>
+            <h2 style={{ marginTop: 0 }}>iRacing Name Search</h2>
             <RealNameSearch />
           </div>
         )}
         {activeComponent === 'favorites' && (
           <div>
-            <h2 style={{ marginTop: 0, color: '#333' }}>Favorites</h2>
+            <h2 style={{ marginTop: 0 }}>Favorites</h2>
             <Favorites />
           </div>
         )}
