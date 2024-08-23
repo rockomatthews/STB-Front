@@ -17,11 +17,13 @@ const OfficialRacesList = () => {
     setError(null);
 
     try {
+      console.log(`Fetching races: page ${refresh ? 1 : page}, limit 10`);
       const response = await axios.get(`${BACKEND_URL}/api/official-races`, {
         params: { page: refresh ? 1 : page, limit: 10 },
         withCredentials: true
       });
 
+      console.log('Response received:', response.data);
       const { races: newRaces, total } = response.data;
 
       if (refresh) {
@@ -32,9 +34,11 @@ const OfficialRacesList = () => {
         setPage(prevPage => prevPage + 1);
       }
       setTotalRaces(total);
+      console.log(`Updated races. Total: ${total}, Current page: ${refresh ? 1 : page}`);
     } catch (err) {
-      setError('Failed to fetch races. Please try again.');
       console.error('Error fetching races:', err);
+      console.error('Error details:', err.response?.data);
+      setError(err.response?.data?.details || err.message || 'An unexpected error occurred while fetching races. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -45,10 +49,12 @@ const OfficialRacesList = () => {
   }, [fetchRaces]);
 
   const handleRefresh = () => {
+    console.log('Refreshing races');
     fetchRaces(true);
   };
 
   const handleLoadMore = () => {
+    console.log('Loading more races');
     fetchRaces();
   };
 
@@ -56,7 +62,7 @@ const OfficialRacesList = () => {
     return (
       <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
         <Typography color="error" sx={{ mt: 2 }}>
-          {error}
+          Error: {error}
         </Typography>
         <Button onClick={handleRefresh} sx={{ mt: 2 }}>
           Try Again
