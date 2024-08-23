@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import RealNameSearch from '../components/RealNameSearch';
 import Favorites from '../components/Favorites';
+import OfficialRacesList from '../components/OfficialRacesList';
 
 const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState('dashboard');
@@ -13,6 +14,9 @@ const Dashboard = () => {
         break;
       case 'Favorites':
         setActiveComponent('favorites');
+        break;
+      case 'Search Official Races':
+        setActiveComponent('officialRaces');
         break;
       default:
         setActiveComponent('dashboard');
@@ -26,7 +30,7 @@ const Dashboard = () => {
     boxSizing: 'border-box',
     backgroundColor: '#000000',
     overflowY: 'auto',
-    color: '#FFFFFF', // Changed text color to white for better contrast
+    color: '#FFFFFF',
   };
 
   return (
@@ -35,20 +39,26 @@ const Dashboard = () => {
       <div style={contentContainerStyle}>
         {activeComponent === 'dashboard' && (
           <div>
-            <h1 style={{ marginTop: 0 }}>Welcome to your Dashboard</h1>
+            <h1>Welcome to your Dashboard</h1>
             <p>This is where you can view all your important information and stats.</p>
           </div>
         )}
         {activeComponent === 'realNameSearch' && (
           <div>
-            <h2 style={{ marginTop: 0 }}>iRacing Name Search</h2>
+            <h2>iRacing Name Search</h2>
             <RealNameSearch />
           </div>
         )}
         {activeComponent === 'favorites' && (
           <div>
-            <h2 style={{ marginTop: 0 }}>Favorites</h2>
+            <h2>Favorites</h2>
             <Favorites />
+          </div>
+        )}
+        {activeComponent === 'officialRaces' && (
+          <div>
+            <h2>Official Races</h2>
+            <OfficialRacesList />
           </div>
         )}
       </div>
