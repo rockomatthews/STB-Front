@@ -12,29 +12,27 @@ const OfficialRacesList = () => {
   const [page, setPage] = useState(1);
   const [totalRaces, setTotalRaces] = useState(0);
 
-  const fetchRaces = useCallback(async (refresh = false) => {
+  const fetchRaces = useCallback(async (pageToFetch, isRefresh = false) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log(`Fetching races: page ${refresh ? 1 : page}, limit 10`);
+      console.log(`Fetching races: page ${pageToFetch}, limit 10`);
       const response = await axios.get(`${BACKEND_URL}/api/official-races`, {
-        params: { page: refresh ? 1 : page, limit: 10 },
+        params: { page: pageToFetch, limit: 10 },
         withCredentials: true
       });
 
       console.log('Response received:', response.data);
       const { races: newRaces, total } = response.data;
 
-      if (refresh) {
+      if (isRefresh) {
         setRaces(newRaces);
-        setPage(1);
       } else {
         setRaces(prevRaces => [...prevRaces, ...newRaces]);
-        setPage(prevPage => prevPage + 1);
       }
       setTotalRaces(total);
-      console.log(`Updated races. Total: ${total}, Current page: ${refresh ? 1 : page}`);
+      console.log(`Updated races. Total: ${total}, Current page: ${pageToFetch}`);
     } catch (err) {
       console.error('Error fetching races:', err);
       console.error('Error details:', err.response?.data);
@@ -42,21 +40,24 @@ const OfficialRacesList = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page]);
+  }, []);
 
   useEffect(() => {
-    fetchRaces();
+    fetchRaces(1, true);
   }, [fetchRaces]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     console.log('Refreshing races');
-    fetchRaces(true);
-  };
+    setPage(1);
+    fetchRaces(1, true);
+  }, [fetchRaces]);
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     console.log('Loading more races');
-    fetchRaces();
-  };
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchRaces(nextPage);
+  }, [page, fetchRaces]);
 
   if (error) {
     return (
@@ -91,11 +92,10 @@ const OfficialRacesList = () => {
               <ListItemText
                 primary={race.name}
                 secondary={`
-                  Track: ${race.track} | 
+                  Track: ${race.track_name} | 
                   Start Time: ${new Date(race.start_time).toLocaleString()} | 
-                  Duration: ${race.duration} | 
-                  License Level: ${race.license_level} | 
-                  Drivers: ${race.current_drivers}/${race.max_drivers}
+                  End Time: ${new Date(race.end_time).toLocaleString()} | 
+                  License Group: ${race.license_group}
                 `}
               />
             </ListItem>
