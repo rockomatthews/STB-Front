@@ -23,7 +23,7 @@ const OfficialRacesList = () => {
         withCredentials: true
       });
 
-      console.log('Response received:', response.data); // Add this log to see the response from the backend
+      console.log('Response received:', response.data);
       const { races: newRaces, total } = response.data;
 
       if (isRefresh) {
@@ -35,8 +35,7 @@ const OfficialRacesList = () => {
       console.log(`Updated races. Total: ${total}, Current page: ${pageToFetch}`);
     } catch (err) {
       console.error('Error fetching races:', err);
-      console.error('Error details:', err.response?.data);
-      setError(err.response?.data?.details || err.message || 'An unexpected error occurred while fetching races. Please try again.');
+      setError('An unexpected error occurred while fetching races. Please try again.');
     } finally {
       setIsLoading(false);
     }
