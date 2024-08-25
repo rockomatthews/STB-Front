@@ -23,7 +23,7 @@ const OfficialRacesList = () => {
         withCredentials: true
       });
 
-      console.log('Response received:', response.data);
+      console.log('Response received:', response.data); // Add this log to see the response from the backend
       const { races: newRaces, total } = response.data;
 
       if (isRefresh) {
