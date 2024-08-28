@@ -140,7 +140,7 @@ const OfficialRacesList = () => {
                     <br />
                     Racers: {race.number_of_racers || 0}
                     <br />
-                    Raw Data: {JSON.stringify(race)}
+                    Available Cars: {race.available_cars ? race.available_cars.join(', ') : 'Unknown'}
                   </React.Fragment>
                 }
               />
