@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Divider, Chip } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import axios from 'axios';
 import { getSession } from '../authService';
@@ -83,6 +83,14 @@ const OfficialRacesList = () => {
     return new Date(timeString).toLocaleString(undefined, options);
   };
 
+  const getStateColor = (state) => {
+    switch (state) {
+      case 'Qualifying': return 'primary';
+      case 'Practice': return 'secondary';
+      default: return 'default';
+    }
+  };
+
   if (error) {
     return (
       <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
@@ -111,24 +119,28 @@ const OfficialRacesList = () => {
 
       <List>
         {races.map((race, index) => (
-          <React.Fragment key={race.id || index}>
+          <React.Fragment key={`${race.series_id}_${race.start_time}`}>
             <ListItem>
               <ListItemText
-                primary={race.title || 'Unknown Series'}
+                primary={
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="subtitle1">{race.title || 'Unknown Series'}</Typography>
+                    <Chip label={race.state || 'Unknown State'} color={getStateColor(race.state)} size="small" />
+                  </Box>
+                }
                 secondary={
                   <React.Fragment>
                     <Typography component="span" variant="body2" color="text.primary">
-                      {race.state || 'Unknown State'}
+                      Track: {race.track_name || 'Unknown Track'}
                     </Typography>
-                    {` | Track: ${race.track_name || 'Unknown Track'}`}
                     <br />
-                    {`Start Time: ${formatTime(race.start_time) || 'Unknown'}`}
+                    Start Time: {formatTime(race.start_time) || 'Unknown'}
                     <br />
-                    {`License Level: ${race.license_level || 'Unknown'} | Car Class: ${race.car_class || 'Unknown'}`}
+                    License Level: {race.license_level || 'Unknown'} | Car Class: {race.car_class_name || 'Unknown'} ({race.car_class || 'Unknown'})
                     <br />
-                    {`Racers: ${race.number_of_racers || 0}`}
+                    Racers: {race.number_of_racers || 0}
                     <br />
-                    {`Raw Data: ${JSON.stringify(race)}`}
+                    Raw Data: {JSON.stringify(race)}
                   </React.Fragment>
                 }
               />
