@@ -2,9 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Divider } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import axios from 'axios';
-import { getSession } from '../authService';
+import { getSession } from './authService';
 
-// Use the backend URL defined in environment variables, or fall back to localhost during development.
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
 
 const OfficialRacesList = () => {
@@ -34,8 +33,12 @@ const OfficialRacesList = () => {
         withCredentials: true
       });
 
-      console.log('Response received:', response.data);
+      console.log('Raw response data:', response.data);
+
       const { races: newRaces, total } = response.data;
+
+      console.log('Parsed races:', newRaces);
+      console.log('Total races:', total);
 
       if (isRefresh) {
         setRaces(newRaces);
@@ -43,7 +46,6 @@ const OfficialRacesList = () => {
         setRaces(prevRaces => [...prevRaces, ...newRaces]);
       }
       setTotalRaces(total);
-      console.log(`Updated races. Total: ${total}, Current page: ${pageToFetch}`);
     } catch (err) {
       console.error('Error fetching races:', err);
       setError('An unexpected error occurred while fetching races. Please try again.');
@@ -109,22 +111,24 @@ const OfficialRacesList = () => {
 
       <List>
         {races.map((race, index) => (
-          <React.Fragment key={`${race.series_id}_${race.start_time}`}>
+          <React.Fragment key={race.id || index}>
             <ListItem>
               <ListItemText
-                primary={race.title}
+                primary={race.title || 'Unknown Series'}
                 secondary={
                   <React.Fragment>
                     <Typography component="span" variant="body2" color="text.primary">
-                      {race.state}
+                      {race.state || 'Unknown State'}
                     </Typography>
-                    {` | Track: ${race.track_name}`}
+                    {` | Track: ${race.track_name || 'Unknown Track'}`}
                     <br />
-                    {`Start Time: ${formatTime(race.start_time)}`}
+                    {`Start Time: ${formatTime(race.start_time) || 'Unknown'}`}
                     <br />
-                    {`License Level: ${race.license_level} | Car Class: ${race.car_class}`}
+                    {`License Level: ${race.license_level || 'Unknown'} | Car Class: ${race.car_class || 'Unknown'}`}
                     <br />
-                    {`Racers: ${race.number_of_racers}`}
+                    {`Racers: ${race.number_of_racers || 0}`}
+                    <br />
+                    {`Raw Data: ${JSON.stringify(race)}`}
                   </React.Fragment>
                 }
               />
