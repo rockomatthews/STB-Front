@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Chip, Paper } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Chip, Paper, useTheme } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
 import { getSession } from '../authService';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+if (!BACKEND_URL) {
+  console.error('REACT_APP_BACKEND_URL is not set. Please configure this environment variable.');
+}
 
 const OfficialRacesList = () => {
+  const theme = useTheme();
   const [races, setRaces] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,6 +29,10 @@ const OfficialRacesList = () => {
       const session = await getSession();
       if (!session) {
         throw new Error('No active session');
+      }
+
+      if (!BACKEND_URL) {
+        throw new Error('Backend URL is not configured');
       }
 
       const response = await axios.get(`${BACKEND_URL}/api/official-races`, {
@@ -86,9 +95,12 @@ const OfficialRacesList = () => {
 
   const getStateColor = (state) => {
     switch (state) {
-      case 'Qualifying': return 'primary';
-      case 'Practice': return 'secondary';
-      default: return 'default';
+      case 'Qualifying':
+        return 'primary';
+      case 'Practice':
+        return 'secondary';
+      default:
+        return 'default';
     }
   };
 
@@ -119,23 +131,35 @@ const OfficialRacesList = () => {
       </Box>
 
       <List>
-        {races.map((race, index) => (
-          <Paper key={`${race.series_id}_${race.start_time}`} elevation={3} sx={{ mb: 2, overflow: 'hidden' }}>
-            <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch', bgcolor: 'background.paper' }}>
+        {races.map((race) => (
+          <Paper 
+            key={`${race.series_id}_${race.start_time}`} 
+            elevation={3} 
+            sx={{ 
+              mb: 2, 
+              overflow: 'hidden',
+              backgroundColor: theme.palette.background.card // Use the card background color from the theme
+            }}
+          >
+            <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch' }}>
               <ListItemText
                 primary={
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="subtitle1" color="text.primary">{race.title || 'Unknown Series'}</Typography>
-                    <Chip label={race.state || 'Unknown State'} color={getStateColor(race.state)} size="small" />
+                    <Typography variant="subtitle1" color={theme.palette.text.secondary}>{race.title || 'Unknown Series'}</Typography>
+                    <Chip 
+                      label={race.state || 'Unknown State'} 
+                      color={getStateColor(race.state)} 
+                      size="small" 
+                    />
                   </Box>
                 }
                 secondary={
                   <React.Fragment>
-                    <Typography component="span" variant="body2" color="text.primary">
+                    <Typography component="span" variant="body2" color={theme.palette.text.secondary}>
                       Track: {race.track_name || 'Unknown Track'}
                     </Typography>
                     <br />
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color={theme.palette.text.secondary}>
                       Start Time: {formatTime(race.start_time) || 'Unknown'}
                       <br />
                       License Level: {race.license_level || 'Unknown'} | Car Class: {race.car_class_name || 'Unknown'} ({race.car_class || 'Unknown'})
@@ -160,7 +184,9 @@ const OfficialRacesList = () => {
         ))}
       </List>
 
-      {isLoading && <CircularProgress sx={{ display: 'block', margin: 'auto', mt: 2 }} />}
+      {isLoading && (
+        <CircularProgress sx={{ display: 'block', margin: 'auto', mt: 2 }} />
+      )}
 
       {!isLoading && races.length < totalRaces && (
         <Button
