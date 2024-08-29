@@ -13,7 +13,7 @@ if (!BACKEND_URL) {
   console.error('REACT_APP_BACKEND_URL is not set. Please configure this environment variable.');
 }
 
-const OfficialRacesList = function() {
+function OfficialRacesList() {
   const theme = useTheme();
   const [races, setRaces] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,52 +23,56 @@ const OfficialRacesList = function() {
   const [expandedRace, setExpandedRace] = useState(null);
   const [racers, setRacers] = useState({});
 
-  const fetchRaces = useCallback(async function(pageToFetch, isRefresh = false) {
+  const fetchRaces = useCallback(function(pageToFetch, isRefresh) {
     setIsLoading(true);
     setError(null);
 
-    try {
-      console.log('Fetching races: page ' + pageToFetch + ', limit 10');
+    async function fetchData() {
+      try {
+        console.log('Fetching races: page ' + pageToFetch + ', limit 10');
 
-      const session = await getSession();
-      if (!session) {
-        throw new Error('No active session');
-      }
+        const session = await getSession();
+        if (!session) {
+          throw new Error('No active session');
+        }
 
-      if (!BACKEND_URL) {
-        throw new Error('Backend URL is not configured');
-      }
+        if (!BACKEND_URL) {
+          throw new Error('Backend URL is not configured');
+        }
 
-      const response = await axios.get(BACKEND_URL + '/api/official-races', {
-        params: { page: pageToFetch, limit: 10 },
-        headers: {
-          Authorization: 'Bearer ' + session.access_token
-        },
-        withCredentials: true
-      });
-
-      console.log('Raw response data:', response.data);
-
-      const newRaces = response.data.races;
-      const total = response.data.total;
-
-      console.log('Parsed races:', newRaces);
-      console.log('Total races:', total);
-
-      if (isRefresh) {
-        setRaces(newRaces);
-      } else {
-        setRaces(function(prevRaces) {
-          return [...prevRaces, ...newRaces];
+        const response = await axios.get(BACKEND_URL + '/api/official-races', {
+          params: { page: pageToFetch, limit: 10 },
+          headers: {
+            Authorization: 'Bearer ' + session.access_token
+          },
+          withCredentials: true
         });
+
+        console.log('Raw response data:', response.data);
+
+        const newRaces = response.data.races;
+        const total = response.data.total;
+
+        console.log('Parsed races:', newRaces);
+        console.log('Total races:', total);
+
+        if (isRefresh) {
+          setRaces(newRaces);
+        } else {
+          setRaces(function(prevRaces) {
+            return prevRaces.concat(newRaces);
+          });
+        }
+        setTotalRaces(total);
+      } catch (err) {
+        console.error('Error fetching races:', err);
+        setError('An unexpected error occurred while fetching races. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
-      setTotalRaces(total);
-    } catch (err) {
-      console.error('Error fetching races:', err);
-      setError('An unexpected error occurred while fetching races. Please try again.');
-    } finally {
-      setIsLoading(false);
     }
+
+    fetchData();
   }, []);
 
   useEffect(function() {
@@ -85,10 +89,10 @@ const OfficialRacesList = function() {
     console.log('Loading more races');
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchRaces(nextPage);
+    fetchRaces(nextPage, false);
   }, [page, fetchRaces]);
 
-  const formatTime = function(timeString) {
+  function formatTime(timeString) {
     const options = { 
       year: 'numeric', 
       month: 'short', 
@@ -98,9 +102,9 @@ const OfficialRacesList = function() {
       timeZoneName: 'short' 
     };
     return new Date(timeString).toLocaleString(undefined, options);
-  };
+  }
 
-  const getStateColor = function(state) {
+  function getStateColor(state) {
     switch (state) {
       case 'Qualifying':
         return 'primary';
@@ -109,33 +113,43 @@ const OfficialRacesList = function() {
       default:
         return 'default';
     }
-  };
+  }
 
-  const fetchRacers = useCallback(async function(subsessionId) {
-    try {
-      const session = await getSession();
-      if (!session) {
-        throw new Error('No active session');
+  const fetchRacers = useCallback(function(subsessionId) {
+    async function fetchRacersData() {
+      try {
+        const session = await getSession();
+        if (!session) {
+          throw new Error('No active session');
+        }
+
+        console.log('Fetching racers for subsessionId:', subsessionId);
+
+        const response = await axios.get(BACKEND_URL + '/api/race-racers', {
+          params: { subsessionId: subsessionId },
+          headers: {
+            Authorization: 'Bearer ' + session.access_token
+          },
+          withCredentials: true
+        });
+
+        console.log('Racers response:', response.data);
+
+        setRacers(function(prevRacers) {
+          return Object.assign({}, prevRacers, {
+            [subsessionId]: response.data
+          });
+        });
+      } catch (err) {
+        console.error('Error fetching racers:', err);
+        if (err.response) {
+          console.error('Error response:', err.response.data);
+        }
+        setError('An unexpected error occurred while fetching racers. Please try again.');
       }
-
-      const response = await axios.get(BACKEND_URL + '/api/race-racers', {
-        params: { subsessionId: subsessionId },
-        headers: {
-          Authorization: 'Bearer ' + session.access_token
-        },
-        withCredentials: true
-      });
-
-      setRacers(function(prevRacers) {
-        return {
-          ...prevRacers,
-          [subsessionId]: response.data
-        };
-      });
-    } catch (err) {
-      console.error('Error fetching racers:', err);
-      setError('An unexpected error occurred while fetching racers. Please try again.');
     }
+
+    fetchRacersData();
   }, []);
 
   const handleExpand = useCallback(function(raceId, subsessionId) {
@@ -143,7 +157,7 @@ const OfficialRacesList = function() {
       setExpandedRace(null);
     } else {
       setExpandedRace(raceId);
-      if (!racers[subsessionId]) {
+      if (!racers.hasOwnProperty(subsessionId)) {
         fetchRacers(subsessionId);
       }
     }
@@ -228,7 +242,7 @@ const OfficialRacesList = function() {
                 {expandedRace === race.series_id && (
                   <RacersList 
                     racers={racers[race.subsession_id] || []} 
-                    isLoading={!racers[race.subsession_id]}
+                    isLoading={!racers.hasOwnProperty(race.subsession_id)}
                   />
                 )}
               </ListItem>
@@ -257,6 +271,6 @@ const OfficialRacesList = function() {
       )}
     </Box>
   );
-};
+}
 
 export default OfficialRacesList;
