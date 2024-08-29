@@ -153,6 +153,7 @@ function OfficialRacesList() {
   }, []);
 
   const handleExpand = useCallback(function(raceId, subsessionId) {
+    console.log('Expanding race:', raceId, 'Subsession ID:', subsessionId);
     if (expandedRace === raceId) {
       setExpandedRace(null);
     } else {
@@ -227,6 +228,8 @@ function OfficialRacesList() {
                         Racers: {race.number_of_racers || 0}
                         <br />
                         Available Cars: {race.available_cars ? race.available_cars.join(', ') : 'Unknown'}
+                        <br />
+                        Subsession ID: {race.subsession_id || 'Unknown'}
                       </Typography>
                     </React.Fragment>
                   }
@@ -234,7 +237,10 @@ function OfficialRacesList() {
                 <Button
                   fullWidth
                   endIcon={expandedRace === race.series_id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  onClick={function() { handleExpand(race.series_id, race.subsession_id); }}
+                  onClick={function() { 
+                    console.log('Expand button clicked for race:', race.series_id, 'Subsession ID:', race.subsession_id);
+                    handleExpand(race.series_id, race.subsession_id); 
+                  }}
                   sx={{ mt: 1 }}
                 >
                   {expandedRace === race.series_id ? 'Collapse' : 'Expand'}
