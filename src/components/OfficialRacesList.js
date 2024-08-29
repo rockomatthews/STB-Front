@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Divider, Chip } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Chip, Paper } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
 import { getSession } from '../authService';
 
@@ -119,8 +120,8 @@ const OfficialRacesList = () => {
 
       <List>
         {races.map((race, index) => (
-          <React.Fragment key={`${race.series_id}_${race.start_time}`}>
-            <ListItem>
+          <Paper key={`${race.series_id}_${race.start_time}`} elevation={3} sx={{ mb: 2, overflow: 'hidden' }}>
+            <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch', bgcolor: 'background.paper', color: 'text.primary' }}>
               <ListItemText
                 primary={
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -144,9 +145,16 @@ const OfficialRacesList = () => {
                   </React.Fragment>
                 }
               />
+              <Button
+                endIcon={<ExpandMoreIcon />}
+                fullWidth
+                sx={{ mt: 2, borderTop: 1, borderColor: 'divider' }}
+                onClick={() => console.log('Expand clicked for race:', race.title)}
+              >
+                Expand
+              </Button>
             </ListItem>
-            {index < races.length - 1 && <Divider />}
-          </React.Fragment>
+          </Paper>
         ))}
       </List>
 
