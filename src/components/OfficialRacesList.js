@@ -121,11 +121,11 @@ const OfficialRacesList = () => {
       <List>
         {races.map((race, index) => (
           <Paper key={`${race.series_id}_${race.start_time}`} elevation={3} sx={{ mb: 2, overflow: 'hidden' }}>
-            <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch', bgcolor: 'background.paper', color: 'text.primary' }}>
+            <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch', bgcolor: 'background.paper' }}>
               <ListItemText
                 primary={
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="subtitle1">{race.title || 'Unknown Series'}</Typography>
+                    <Typography variant="subtitle1" color="text.primary">{race.title || 'Unknown Series'}</Typography>
                     <Chip label={race.state || 'Unknown State'} color={getStateColor(race.state)} size="small" />
                   </Box>
                 }
@@ -135,21 +135,23 @@ const OfficialRacesList = () => {
                       Track: {race.track_name || 'Unknown Track'}
                     </Typography>
                     <br />
-                    Start Time: {formatTime(race.start_time) || 'Unknown'}
-                    <br />
-                    License Level: {race.license_level || 'Unknown'} | Car Class: {race.car_class_name || 'Unknown'} ({race.car_class || 'Unknown'})
-                    <br />
-                    Racers: {race.number_of_racers || 0}
-                    <br />
-                    Available Cars: {race.available_cars ? race.available_cars.join(', ') : 'Unknown'}
+                    <Typography variant="body2" color="text.secondary">
+                      Start Time: {formatTime(race.start_time) || 'Unknown'}
+                      <br />
+                      License Level: {race.license_level || 'Unknown'} | Car Class: {race.car_class_name || 'Unknown'} ({race.car_class || 'Unknown'})
+                      <br />
+                      Racers: {race.number_of_racers || 0}
+                      <br />
+                      Available Cars: {race.available_cars ? race.available_cars.join(', ') : 'Unknown'}
+                    </Typography>
                   </React.Fragment>
                 }
               />
               <Button
-                endIcon={<ExpandMoreIcon />}
                 fullWidth
-                sx={{ mt: 2, borderTop: 1, borderColor: 'divider' }}
+                endIcon={<ExpandMoreIcon />}
                 onClick={() => console.log('Expand clicked for race:', race.title)}
+                sx={{ mt: 1 }}
               >
                 Expand
               </Button>
