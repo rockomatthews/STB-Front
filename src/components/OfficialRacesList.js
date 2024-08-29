@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Chip, Paper, useTheme } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import axios from 'axios';
 import { getSession } from '../authService';
+import RacersList from './RacersList';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -18,6 +20,7 @@ const OfficialRacesList = () => {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalRaces, setTotalRaces] = useState(0);
+  const [expandedRace, setExpandedRace] = useState(null);
 
   const fetchRaces = useCallback(async (pageToFetch, isRefresh = false) => {
     setIsLoading(true);
@@ -104,6 +107,14 @@ const OfficialRacesList = () => {
     }
   };
 
+  const handleExpand = (raceId) => {
+    if (expandedRace === raceId) {
+      setExpandedRace(null);
+    } else {
+      setExpandedRace(raceId);
+    }
+  };
+
   if (error) {
     return (
       <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
@@ -138,7 +149,7 @@ const OfficialRacesList = () => {
             sx={{ 
               mb: 2, 
               overflow: 'hidden',
-              backgroundColor: theme.palette.background.card // Use the card background color from the theme
+              backgroundColor: theme.palette.background.card
             }}
           >
             <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch' }}>
@@ -173,12 +184,15 @@ const OfficialRacesList = () => {
               />
               <Button
                 fullWidth
-                endIcon={<ExpandMoreIcon />}
-                onClick={() => console.log('Expand clicked for race:', race.title)}
+                endIcon={expandedRace === race.series_id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                onClick={() => handleExpand(race.series_id)}
                 sx={{ mt: 1 }}
               >
-                Expand
+                {expandedRace === race.series_id ? 'Collapse' : 'Expand'}
               </Button>
+              {expandedRace === race.series_id && (
+                <RacersList numberOfRacers={race.number_of_racers || 0} />
+              )}
             </ListItem>
           </Paper>
         ))}
