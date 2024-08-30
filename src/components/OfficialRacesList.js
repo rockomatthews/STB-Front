@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Chip, Paper, useTheme } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, List, ListItem, ListItemText, Chip, Paper } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -14,7 +14,6 @@ if (!BACKEND_URL) {
 }
 
 function OfficialRacesList() {
-  const theme = useTheme();
   const [races, setRaces] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -199,14 +198,15 @@ function OfficialRacesList() {
               sx={{ 
                 mb: 2, 
                 overflow: 'hidden',
-                backgroundColor: theme.palette.background.card
+                border: '1px solid white', // Add white outline
+                backgroundColor: 'transparent' // Make background transparent
               }}
             >
               <ListItem sx={{ flexDirection: 'column', alignItems: 'stretch' }}>
                 <ListItemText
                   primary={
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="subtitle1" color={theme.palette.text.secondary}>{race.title || 'Unknown Series'}</Typography>
+                      <Typography variant="subtitle1" color="text.primary">{race.title || 'Unknown Series'}</Typography>
                       <Chip 
                         label={race.state || 'Unknown State'} 
                         color={getStateColor(race.state)} 
@@ -216,11 +216,11 @@ function OfficialRacesList() {
                   }
                   secondary={
                     <React.Fragment>
-                      <Typography component="span" variant="body2" color={theme.palette.text.secondary}>
+                      <Typography component="span" variant="body2" color="text.primary">
                         Track: {race.track_name || 'Unknown Track'}
                       </Typography>
                       <br />
-                      <Typography variant="body2" color={theme.palette.text.secondary}>
+                      <Typography variant="body2" color="text.primary">
                         Start Time: {formatTime(race.start_time) || 'Unknown'}
                         <br />
                         License Level: {race.license_level || 'Unknown'} | Car Class: {race.car_class_name || 'Unknown'} ({race.car_class || 'Unknown'})

@@ -12,7 +12,6 @@ const theme = createTheme({
     background: {
       default: '#000000',
       paper: '#000000',
-      card: '#FFFFFF', // White color for card backgrounds
     },
     text: {
       primary: '#FFFFFF',
@@ -28,13 +27,6 @@ const theme = createTheme({
           '&:hover': {
             backgroundColor: '#CCCC00',
           },
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#FFFFFF', // Set default Paper background to white
         },
       },
     },
