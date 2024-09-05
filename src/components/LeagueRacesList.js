@@ -14,11 +14,11 @@ const LeagueRacesList = () => {
       try {
         setLoading(true);
         const response = await axios.get('https://stb-back-etjo.onrender.com/api/league-seasons');
-        console.log('Seasons response:', response.data); // Debugging log
-        if (Array.isArray(response.data)) {
-          setSeasons(response.data);
-          if (response.data.length > 0) {
-            setSelectedSeason(response.data[0].season_id.toString());
+        console.log('Seasons response:', response.data);
+        if (response.data && Array.isArray(response.data.seasons)) {
+          setSeasons(response.data.seasons);
+          if (response.data.seasons.length > 0) {
+            setSelectedSeason(response.data.seasons[0].season_id.toString());
           }
         } else {
           console.error('Unexpected seasons data format:', response.data);
@@ -41,7 +41,7 @@ const LeagueRacesList = () => {
         try {
           setLoading(true);
           const response = await axios.get(`https://stb-back-etjo.onrender.com/api/league-subsessions?seasonId=${selectedSeason}`);
-          console.log('Races response:', response.data); // Debugging log
+          console.log('Races response:', response.data);
           if (Array.isArray(response.data)) {
             setRaces(response.data);
           } else {
