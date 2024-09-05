@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { List, ListItem, ListItemText, Typography, Box, CircularProgress, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, Box, CircularProgress, Select, MenuItem, FormControl, InputLabel, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import axios from 'axios';
 
 const LeagueRacesList = () => {
   const [seasons, setSeasons] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState('');
   const [races, setRaces] = useState([]);
+  const [roster, setRoster] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openRoster, setOpenRoster] = useState(false);
 
   useEffect(() => {
     const fetchSeasons = async () => {
@@ -59,6 +61,26 @@ const LeagueRacesList = () => {
 
     fetchRaces();
   }, [selectedSeason]);
+
+  const fetchRoster = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('https://stb-back-etjo.onrender.com/api/league-roster');
+      console.log('Roster response:', response.data);
+      if (response.data && Array.isArray(response.data.roster)) {
+        setRoster(response.data.roster);
+        setOpenRoster(true);
+      } else {
+        console.error('Unexpected roster data format:', response.data);
+        setError('Received unexpected data format for roster');
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching roster:', error);
+      setError('Failed to load roster. Please try again later.');
+      setLoading(false);
+    }
+  };
 
   const handleSeasonChange = (event) => {
     setSelectedSeason(event.target.value);
@@ -112,6 +134,10 @@ const LeagueRacesList = () => {
         <Typography>No seasons available.</Typography>
       )}
 
+      <Button onClick={fetchRoster} variant="contained" sx={{ mb: 2 }}>
+        View Season Roster
+      </Button>
+
       {races.length > 0 ? (
         <List>
           {races.map((race) => (
@@ -126,6 +152,20 @@ const LeagueRacesList = () => {
       ) : (
         <Typography>No races found for this season.</Typography>
       )}
+
+      <Dialog open={openRoster} onClose={() => setOpenRoster(false)}>
+        <DialogTitle>Season Roster</DialogTitle>
+        <DialogContent>
+          {roster.map((driver) => (
+            <Typography key={driver.cust_id}>
+              {driver.display_name}
+            </Typography>
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenRoster(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -15,8 +15,8 @@ const Dashboard = () => {
       case 'Favorites':
         setActiveComponent('favorites');
         break;
-      case 'Search Official Races':
-        setActiveComponent('officialRaces');
+      case 'Search League Races':
+        setActiveComponent('leagueRaces');
         break;
       default:
         setActiveComponent('dashboard');
@@ -55,9 +55,9 @@ const Dashboard = () => {
             <Favorites />
           </div>
         )}
-        {activeComponent === 'officialRaces' && (
+        {activeComponent === 'leagueRaces' && (
           <div>
-            <h2>Official Races</h2>
+            <h2>League Races</h2>
             <LeagueRacesList />
           </div>
         )}
