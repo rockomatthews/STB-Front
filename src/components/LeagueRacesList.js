@@ -42,8 +42,8 @@ const LeagueRacesList = () => {
           setLoading(true);
           const response = await axios.get(`https://stb-back-etjo.onrender.com/api/league-subsessions?seasonId=${selectedSeason}`);
           console.log('Races response:', response.data);
-          if (Array.isArray(response.data)) {
-            setRaces(response.data);
+          if (response.data && Array.isArray(response.data.sessions)) {
+            setRaces(response.data.sessions);
           } else {
             console.error('Unexpected races data format:', response.data);
             setError('Received unexpected data format for races');
@@ -118,7 +118,7 @@ const LeagueRacesList = () => {
             <ListItem key={race.subsession_id}>
               <ListItemText
                 primary={race.session_name || 'Unnamed Race'}
-                secondary={`${formatDate(race.start_time)} at ${race.track.track_name}`}
+                secondary={`${formatDate(race.start_time)} at ${race.track?.track_name || 'Unknown Track'}`}
               />
             </ListItem>
           ))}
