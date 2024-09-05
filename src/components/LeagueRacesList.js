@@ -3,6 +3,8 @@ import { List, ListItem, ListItemText, Typography, Box, CircularProgress, Select
 import axios from 'axios';
 
 const LeagueRacesList = () => {
+  console.log('LeagueRacesList component rendering');
+
   const [seasons, setSeasons] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState('');
   const [races, setRaces] = useState([]);
@@ -12,9 +14,11 @@ const LeagueRacesList = () => {
   const [openRoster, setOpenRoster] = useState(false);
 
   useEffect(() => {
+    console.log('Fetching seasons effect running');
     const fetchSeasons = async () => {
       try {
         setLoading(true);
+        console.log('Making API call to fetch seasons');
         const response = await axios.get('https://stb-back-etjo.onrender.com/api/league-seasons');
         console.log('Seasons response:', response.data);
         if (response.data && Array.isArray(response.data.seasons)) {
@@ -38,10 +42,12 @@ const LeagueRacesList = () => {
   }, []);
 
   useEffect(() => {
+    console.log('Fetching races effect running, selectedSeason:', selectedSeason);
     const fetchRaces = async () => {
       if (selectedSeason) {
         try {
           setLoading(true);
+          console.log('Making API call to fetch races');
           const response = await axios.get(`https://stb-back-etjo.onrender.com/api/league-subsessions?seasonId=${selectedSeason}`);
           console.log('Races response:', response.data);
           if (response.data && Array.isArray(response.data.sessions)) {
@@ -65,6 +71,7 @@ const LeagueRacesList = () => {
   const fetchRoster = async () => {
     try {
       setLoading(true);
+      console.log('Making API call to fetch roster');
       const response = await axios.get('https://stb-back-etjo.onrender.com/api/league-roster');
       console.log('Roster response:', response.data);
       if (response.data && Array.isArray(response.data.roster)) {
@@ -83,6 +90,7 @@ const LeagueRacesList = () => {
   };
 
   const handleSeasonChange = (event) => {
+    console.log('Season changed to:', event.target.value);
     setSelectedSeason(event.target.value);
   };
 
@@ -90,6 +98,8 @@ const LeagueRacesList = () => {
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+
+  console.log('Component state:', { loading, error, seasons, selectedSeason, races, roster });
 
   if (loading) {
     return (
