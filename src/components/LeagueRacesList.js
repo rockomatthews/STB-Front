@@ -14,9 +14,15 @@ const LeagueRacesList = () => {
       try {
         setLoading(true);
         const response = await axios.get('https://stb-back-etjo.onrender.com/api/league-seasons');
-        setSeasons(response.data);
-        if (response.data.length > 0) {
-          setSelectedSeason(response.data[0].season_id.toString());
+        console.log('Seasons response:', response.data); // Debugging log
+        if (Array.isArray(response.data)) {
+          setSeasons(response.data);
+          if (response.data.length > 0) {
+            setSelectedSeason(response.data[0].season_id.toString());
+          }
+        } else {
+          console.error('Unexpected seasons data format:', response.data);
+          setError('Received unexpected data format for seasons');
         }
         setLoading(false);
       } catch (error) {
@@ -35,7 +41,13 @@ const LeagueRacesList = () => {
         try {
           setLoading(true);
           const response = await axios.get(`https://stb-back-etjo.onrender.com/api/league-subsessions?seasonId=${selectedSeason}`);
-          setRaces(response.data);
+          console.log('Races response:', response.data); // Debugging log
+          if (Array.isArray(response.data)) {
+            setRaces(response.data);
+          } else {
+            console.error('Unexpected races data format:', response.data);
+            setError('Received unexpected data format for races');
+          }
           setLoading(false);
         } catch (error) {
           console.error('Error fetching races:', error);
@@ -79,22 +91,26 @@ const LeagueRacesList = () => {
         League Races
       </Typography>
       
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel id="season-select-label">Select Season</InputLabel>
-        <Select
-          labelId="season-select-label"
-          id="season-select"
-          value={selectedSeason}
-          label="Select Season"
-          onChange={handleSeasonChange}
-        >
-          {seasons.map((season) => (
-            <MenuItem key={season.season_id} value={season.season_id.toString()}>
-              {season.season_name || `Season ${season.season_id}`}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      {seasons.length > 0 ? (
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel id="season-select-label">Select Season</InputLabel>
+          <Select
+            labelId="season-select-label"
+            id="season-select"
+            value={selectedSeason}
+            label="Select Season"
+            onChange={handleSeasonChange}
+          >
+            {seasons.map((season) => (
+              <MenuItem key={season.season_id} value={season.season_id.toString()}>
+                {season.season_name || `Season ${season.season_id}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : (
+        <Typography>No seasons available.</Typography>
+      )}
 
       {races.length > 0 ? (
         <List>
