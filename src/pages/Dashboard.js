@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import RealNameSearch from '../components/RealNameSearch';
 import Favorites from '../components/Favorites';
-import OfficialRacesList from '../components/OfficialRacesList';
+import LeagueRacesList from '../components/LeagueRacesList';
 
 const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState('dashboard');
@@ -58,7 +58,7 @@ const Dashboard = () => {
         {activeComponent === 'officialRaces' && (
           <div>
             <h2>Official Races</h2>
-            <OfficialRacesList />
+            <LeagueRacesList />
           </div>
         )}
       </div>
