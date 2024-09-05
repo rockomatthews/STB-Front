@@ -15,7 +15,7 @@ const Dashboard = () => {
       case 'Favorites':
         setActiveComponent('favorites');
         break;
-      case 'Search League Races':
+      case 'League Races':
         setActiveComponent('leagueRaces');
         break;
       default:

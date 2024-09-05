@@ -4,11 +4,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
-import FindInPageIcon from '@mui/icons-material/FindInPage';
 import SportsMotorsportsIcon from '@mui/icons-material/SportsMotorsports';
 import HistoryIcon from '@mui/icons-material/History';
 import StarIcon from '@mui/icons-material/Star';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const Header = ({ onMenuItemClick }) => {
   const theme = useTheme();
@@ -29,7 +29,7 @@ const Header = ({ onMenuItemClick }) => {
   const menuItems = [
     { text: 'Profile', icon: <PersonIcon sx={{ color: 'black' }} /> },
     { text: 'iRacing Name Search', icon: <SearchIcon sx={{ color: 'black' }} /> },
-    { text: 'Search Official Races', icon: <FindInPageIcon sx={{ color: 'black' }} /> },
+    { text: 'League Races', icon: <EmojiEventsIcon sx={{ color: 'black' }} /> },
     { text: 'Bets', icon: <SportsMotorsportsIcon sx={{ color: 'black' }} /> },
     { text: 'Bet History', icon: <HistoryIcon sx={{ color: 'black' }} /> },
     { text: 'Favorites', icon: <StarIcon sx={{ color: 'black' }} /> },
