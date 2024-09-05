@@ -1,13 +1,49 @@
-import React from 'react';
-import { List, ListItem, ListItemText, Typography, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { List, ListItem, ListItemText, Typography, Box, CircularProgress } from '@mui/material';
+import axios from 'axios';
 
 const LeagueRacesList = () => {
-  const dummyRaces = [
-    { id: 1, name: "Sunday Night Sprint", date: "2024-09-08", track: "Daytona International Speedway" },
-    { id: 2, name: "Midweek Madness", date: "2024-09-11", track: "Circuit de Spa-Francorchamps" },
-    { id: 3, name: "Friday Night Lights", date: "2024-09-13", track: "Bristol Motor Speedway" },
-    { id: 4, name: "Endurance Challenge", date: "2024-09-15", track: "Nürburgring" },
-  ];
+  const [races, setRaces] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchRaces = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('https://stb-back-etjo.onrender.com/api/league-subsessions');
+        setRaces(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching races:', err);
+        setError('Failed to load races. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchRaces();
+  }, []);
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
@@ -15,11 +51,11 @@ const LeagueRacesList = () => {
         Upcoming League Races
       </Typography>
       <List>
-        {dummyRaces.map((race) => (
-          <ListItem key={race.id}>
+        {races.map((race) => (
+          <ListItem key={race.subsession_id}>
             <ListItemText
-              primary={race.name}
-              secondary={`${race.date} at ${race.track}`}
+              primary={race.session_name || 'Unnamed Race'}
+              secondary={`${formatDate(race.start_time)} at ${race.track.track_name}`}
             />
           </ListItem>
         ))}
