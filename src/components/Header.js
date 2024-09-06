@@ -54,6 +54,8 @@ const Header = ({ onMenuItemClick }) => {
     </Box>
   );
 
+  // ... rest of the component remains the same
+
   return (
     <React.Fragment>
       <AppBar position="fixed" sx={{ backgroundColor: theme.palette.primary.main }}>
