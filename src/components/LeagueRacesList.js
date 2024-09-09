@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { List, ListItem, ListItemText, Typography, Box, CircularProgress, Select, MenuItem, FormControl, InputLabel, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { 
+  List, 
+  ListItem, 
+  ListItemText, 
+  Typography, 
+  Box, 
+  CircularProgress, 
+  Select, 
+  MenuItem, 
+  FormControl, 
+  InputLabel, 
+  Button, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions 
+} from '@mui/material';
 import axios from 'axios';
+import PlaceBet from './PlaceBet'; // Import the new PlaceBet component
 
 const LeagueRacesList = () => {
   console.log('LeagueRacesList component rendering');
@@ -12,6 +29,8 @@ const LeagueRacesList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openRoster, setOpenRoster] = useState(false);
+  const [selectedRace, setSelectedRace] = useState(null);
+  const [openBetDialog, setOpenBetDialog] = useState(false);
 
   useEffect(() => {
     console.log('Fetching seasons effect running');
@@ -99,7 +118,19 @@ const LeagueRacesList = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  console.log('Component state:', { loading, error, seasons, selectedSeason, races, roster });
+  const handleOpenBetDialog = (race) => {
+    console.log('Opening bet dialog for race:', race);
+    setSelectedRace(race);
+    setOpenBetDialog(true);
+  };
+
+  const handleCloseBetDialog = () => {
+    console.log('Closing bet dialog');
+    setOpenBetDialog(false);
+    setSelectedRace(null);
+  };
+
+  console.log('Component state:', { loading, error, seasons, selectedSeason, races, roster, selectedRace, openBetDialog });
 
   if (loading) {
     return (
@@ -156,6 +187,9 @@ const LeagueRacesList = () => {
                 primary={race.session_name || 'Unnamed Race'}
                 secondary={`${formatDate(race.start_time)} at ${race.track?.track_name || 'Unknown Track'}`}
               />
+              <Button onClick={() => handleOpenBetDialog(race)} variant="outlined">
+                Place Bet
+              </Button>
             </ListItem>
           ))}
         </List>
@@ -174,6 +208,25 @@ const LeagueRacesList = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenRoster(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openBetDialog} onClose={handleCloseBetDialog}>
+        <DialogTitle>Place a Bet</DialogTitle>
+        <DialogContent>
+          {selectedRace && (
+            <PlaceBet
+              leagueId={11489} // Your league ID
+              seasonId={selectedSeason}
+              raceId={selectedRace.subsession_id}
+              raceName={selectedRace.session_name || 'Unnamed Race'}
+              raceDate={formatDate(selectedRace.start_time)}
+              trackName={selectedRace.track?.track_name || 'Unknown Track'}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseBetDialog}>Close</Button>
         </DialogActions>
       </Dialog>
     </Box>
