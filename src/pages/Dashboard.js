@@ -3,9 +3,11 @@ import Header from '../components/Header';
 import RealNameSearch from '../components/RealNameSearch';
 import Favorites from '../components/Favorites';
 import LeagueRacesList from '../components/LeagueRacesList';
+import RaceDetails from '../components/RaceDetails';
 
 const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState('dashboard');
+  const [selectedRace, setSelectedRace] = useState(null);
 
   const handleMenuItemClick = (menuItem) => {
     switch (menuItem) {
@@ -21,6 +23,12 @@ const Dashboard = () => {
       default:
         setActiveComponent('dashboard');
     }
+    setSelectedRace(null); // Reset selected race when changing menu items
+  };
+
+  const handleRaceSelect = (race) => {
+    setSelectedRace(race);
+    setActiveComponent('raceDetails');
   };
 
   const contentContainerStyle = {
@@ -58,7 +66,13 @@ const Dashboard = () => {
         {activeComponent === 'leagueRaces' && (
           <div>
             <h2>League Races</h2>
-            <LeagueRacesList />
+            <LeagueRacesList onRaceSelect={handleRaceSelect} />
+          </div>
+        )}
+        {activeComponent === 'raceDetails' && selectedRace && (
+          <div>
+            <h2>Race Details</h2>
+            <RaceDetails race={selectedRace} />
           </div>
         )}
       </div>

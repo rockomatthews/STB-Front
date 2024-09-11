@@ -1,25 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Select, MenuItem, TextField, Button } from '@mui/material';
 import axios from 'axios';
 
-const PlaceBet = ({ leagueId, seasonId, raceId, raceName, raceDate, trackName }) => {
-  const [drivers, setDrivers] = useState([]);
+const PlaceBet = ({ leagueId, seasonId, raceId, raceName, raceDate, trackName, drivers }) => {
   const [selectedDriver, setSelectedDriver] = useState('');
   const [betAmount, setBetAmount] = useState('');
   const odds = 2.0; // Fixed odds for now, can be made dynamic later
-
-  useEffect(() => {
-    const fetchDrivers = async () => {
-      try {
-        const response = await axios.get(`https://stb-back-etjo.onrender.com/api/league-roster`);
-        setDrivers(response.data.roster);
-      } catch (error) {
-        console.error('Error fetching drivers:', error);
-      }
-    };
-
-    fetchDrivers();
-  }, []);
 
   const handlePlaceBet = async () => {
     try {

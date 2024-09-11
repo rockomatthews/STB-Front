@@ -9,44 +9,28 @@ import {
   Select, 
   MenuItem, 
   FormControl, 
-  InputLabel, 
-  Button, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions 
+  InputLabel 
 } from '@mui/material';
 import axios from 'axios';
-import PlaceBet from './PlaceBet'; // Import the new PlaceBet component
 
-const LeagueRacesList = () => {
-  console.log('LeagueRacesList component rendering');
-
+const LeagueRacesList = ({ onRaceSelect }) => {
   const [seasons, setSeasons] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState('');
   const [races, setRaces] = useState([]);
-  const [roster, setRoster] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [openRoster, setOpenRoster] = useState(false);
-  const [selectedRace, setSelectedRace] = useState(null);
-  const [openBetDialog, setOpenBetDialog] = useState(false);
 
   useEffect(() => {
-    console.log('Fetching seasons effect running');
     const fetchSeasons = async () => {
       try {
         setLoading(true);
-        console.log('Making API call to fetch seasons');
         const response = await axios.get('https://stb-back-etjo.onrender.com/api/league-seasons');
-        console.log('Seasons response:', response.data);
         if (response.data && Array.isArray(response.data.seasons)) {
           setSeasons(response.data.seasons);
           if (response.data.seasons.length > 0) {
             setSelectedSeason(response.data.seasons[0].season_id.toString());
           }
         } else {
-          console.error('Unexpected seasons data format:', response.data);
           setError('Received unexpected data format for seasons');
         }
         setLoading(false);
@@ -61,18 +45,14 @@ const LeagueRacesList = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Fetching races effect running, selectedSeason:', selectedSeason);
     const fetchRaces = async () => {
       if (selectedSeason) {
         try {
           setLoading(true);
-          console.log('Making API call to fetch races');
           const response = await axios.get(`https://stb-back-etjo.onrender.com/api/league-subsessions?seasonId=${selectedSeason}`);
-          console.log('Races response:', response.data);
           if (response.data && Array.isArray(response.data.sessions)) {
             setRaces(response.data.sessions);
           } else {
-            console.error('Unexpected races data format:', response.data);
             setError('Received unexpected data format for races');
           }
           setLoading(false);
@@ -87,50 +67,18 @@ const LeagueRacesList = () => {
     fetchRaces();
   }, [selectedSeason]);
 
-  const fetchRoster = async () => {
-    try {
-      setLoading(true);
-      console.log('Making API call to fetch roster');
-      const response = await axios.get('https://stb-back-etjo.onrender.com/api/league-roster');
-      console.log('Roster response:', response.data);
-      if (response.data && Array.isArray(response.data.roster)) {
-        setRoster(response.data.roster);
-        setOpenRoster(true);
-      } else {
-        console.error('Unexpected roster data format:', response.data);
-        setError('Received unexpected data format for roster');
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching roster:', error);
-      setError('Failed to load roster. Please try again later.');
-      setLoading(false);
-    }
+  const handleSeasonChange = (event) => {
+    setSelectedSeason(event.target.value);
   };
 
-  const handleSeasonChange = (event) => {
-    console.log('Season changed to:', event.target.value);
-    setSelectedSeason(event.target.value);
+  const handleRaceClick = (race) => {
+    onRaceSelect(race);
   };
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
-  const handleOpenBetDialog = (race) => {
-    console.log('Opening bet dialog for race:', race);
-    setSelectedRace(race);
-    setOpenBetDialog(true);
-  };
-
-  const handleCloseBetDialog = () => {
-    console.log('Closing bet dialog');
-    setOpenBetDialog(false);
-    setSelectedRace(null);
-  };
-
-  console.log('Component state:', { loading, error, seasons, selectedSeason, races, roster, selectedRace, openBetDialog });
 
   if (loading) {
     return (
@@ -150,10 +98,6 @@ const LeagueRacesList = () => {
 
   return (
     <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        League Races
-      </Typography>
-      
       {seasons.length > 0 ? (
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel id="season-select-label">Select Season</InputLabel>
@@ -175,60 +119,33 @@ const LeagueRacesList = () => {
         <Typography>No seasons available.</Typography>
       )}
 
-      <Button onClick={fetchRoster} variant="contained" sx={{ mb: 2 }}>
-        View Season Roster
-      </Button>
-
       {races.length > 0 ? (
         <List>
           {races.map((race) => (
-            <ListItem key={race.subsession_id}>
+            <ListItem 
+              key={race.subsession_id} 
+              button 
+              onClick={() => handleRaceClick(race)}
+              sx={{ 
+                border: '1px solid #ddd', 
+                borderRadius: '4px', 
+                mb: 1,
+                '&:hover': {
+                  backgroundColor: '#f5f5f5',
+                },
+                color: '#000000' // Ensure text is visible on light background
+              }}
+            >
               <ListItemText
                 primary={race.session_name || 'Unnamed Race'}
                 secondary={`${formatDate(race.start_time)} at ${race.track?.track_name || 'Unknown Track'}`}
               />
-              <Button onClick={() => handleOpenBetDialog(race)} variant="outlined">
-                Place Bet
-              </Button>
             </ListItem>
           ))}
         </List>
       ) : (
         <Typography>No races found for this season.</Typography>
       )}
-
-      <Dialog open={openRoster} onClose={() => setOpenRoster(false)}>
-        <DialogTitle>Season Roster</DialogTitle>
-        <DialogContent>
-          {roster.map((driver) => (
-            <Typography key={driver.cust_id}>
-              {driver.display_name}
-            </Typography>
-          ))}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenRoster(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={openBetDialog} onClose={handleCloseBetDialog}>
-        <DialogTitle>Place a Bet</DialogTitle>
-        <DialogContent>
-          {selectedRace && (
-            <PlaceBet
-              leagueId={11489} // Your league ID
-              seasonId={selectedSeason}
-              raceId={selectedRace.subsession_id}
-              raceName={selectedRace.session_name || 'Unnamed Race'}
-              raceDate={formatDate(selectedRace.start_time)}
-              trackName={selectedRace.track?.track_name || 'Unknown Track'}
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseBetDialog}>Close</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
