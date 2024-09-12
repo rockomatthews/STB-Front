@@ -9,11 +9,13 @@ import {
   Select, 
   MenuItem, 
   FormControl, 
-  InputLabel 
+  InputLabel,
+  useTheme
 } from '@mui/material';
 import axios from 'axios';
 
 const LeagueRacesList = ({ onRaceSelect }) => {
+  const theme = useTheme();
   const [seasons, setSeasons] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState('');
   const [races, setRaces] = useState([]);
@@ -83,7 +85,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: theme.palette.primary.main }} />
       </Box>
     );
   }
@@ -100,13 +102,25 @@ const LeagueRacesList = ({ onRaceSelect }) => {
     <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
       {seasons.length > 0 ? (
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel id="season-select-label">Select Season</InputLabel>
+          <InputLabel id="season-select-label" sx={{ color: theme.palette.text.primary }}>Select Season</InputLabel>
           <Select
             labelId="season-select-label"
             id="season-select"
             value={selectedSeason}
             label="Select Season"
             onChange={handleSeasonChange}
+            sx={{ 
+              color: theme.palette.text.primary,
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.palette.text.primary,
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.palette.primary.main,
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.palette.primary.main,
+              },
+            }}
           >
             {seasons.map((season) => (
               <MenuItem key={season.season_id} value={season.season_id.toString()}>
@@ -116,7 +130,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
           </Select>
         </FormControl>
       ) : (
-        <Typography>No seasons available.</Typography>
+        <Typography sx={{ color: theme.palette.text.primary }}>No seasons available.</Typography>
       )}
 
       {races.length > 0 ? (
@@ -127,24 +141,26 @@ const LeagueRacesList = ({ onRaceSelect }) => {
               button 
               onClick={() => handleRaceClick(race)}
               sx={{ 
-                border: '1px solid #ddd', 
+                border: `1px solid ${theme.palette.text.primary}`, 
                 borderRadius: '4px', 
                 mb: 1,
                 '&:hover': {
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: theme.palette.action.hover,
                 },
-                color: '#000000' // Ensure text is visible on light background
+                color: theme.palette.text.primary
               }}
             >
               <ListItemText
                 primary={race.session_name || 'Unnamed Race'}
                 secondary={`${formatDate(race.start_time)} at ${race.track?.track_name || 'Unknown Track'}`}
+                primaryTypographyProps={{ color: theme.palette.text.primary }}
+                secondaryTypographyProps={{ color: theme.palette.text.secondary }}
               />
             </ListItem>
           ))}
         </List>
       ) : (
-        <Typography>No races found for this season.</Typography>
+        <Typography sx={{ color: theme.palette.text.primary }}>No races found for this season.</Typography>
       )}
     </Box>
   );
