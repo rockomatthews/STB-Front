@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   List, 
   ListItem, 
-  ListItemText, 
   Typography, 
   Box, 
   CircularProgress, 
@@ -10,7 +9,8 @@ import {
   MenuItem, 
   FormControl, 
   InputLabel,
-  useTheme
+  useTheme,
+  Button
 } from '@mui/material';
 import axios from 'axios';
 
@@ -78,8 +78,20 @@ const LeagueRacesList = ({ onRaceSelect }) => {
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date:', dateString);
+      return 'Invalid Date';
+    }
+    const options = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit',
+      timeZone: 'UTC'  // Assuming the date is in UTC
+    };
+    return date.toLocaleDateString(undefined, options);
   };
 
   if (loading) {
@@ -136,26 +148,28 @@ const LeagueRacesList = ({ onRaceSelect }) => {
       {races.length > 0 ? (
         <List>
           {races.map((race) => (
-            <ListItem 
-              key={race.subsession_id} 
-              button 
-              onClick={() => handleRaceClick(race)}
-              sx={{ 
-                border: `1px solid ${theme.palette.text.primary}`, 
-                borderRadius: '4px', 
-                mb: 1,
-                '&:hover': {
-                  backgroundColor: theme.palette.action.hover,
-                },
-                color: theme.palette.text.primary
-              }}
-            >
-              <ListItemText
-                primary={race.session_name || 'Unnamed Race'}
-                secondary={`${formatDate(race.start_time)} at ${race.track?.track_name || 'Unknown Track'}`}
-                primaryTypographyProps={{ color: theme.palette.text.primary }}
-                secondaryTypographyProps={{ color: theme.palette.text.secondary }}
-              />
+            <ListItem key={race.subsession_id} sx={{ padding: 0, marginBottom: 1 }}>
+              <Button
+                onClick={() => handleRaceClick(race)}
+                fullWidth
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.text.secondary,
+                  textAlign: 'left',
+                  '&:hover': {
+                    backgroundColor: theme.palette.primary.dark,
+                  },
+                }}
+              >
+                <Box>
+                  <Typography variant="body1" component="div">
+                    {formatDate(race.start_time)}
+                  </Typography>
+                  <Typography variant="body2" component="div">
+                    {race.track?.track_name || 'Unknown Track'}
+                  </Typography>
+                </Box>
+              </Button>
             </ListItem>
           ))}
         </List>
