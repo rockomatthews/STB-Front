@@ -81,7 +81,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
       console.error('Invalid date:', dateString);
-      return 'Invalid Date';
+      return 'Date not available';
     }
     const options = { 
       year: 'numeric', 
@@ -89,7 +89,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
       day: 'numeric', 
       hour: '2-digit', 
       minute: '2-digit',
-      timeZone: 'UTC'  // Assuming the date is in UTC
+      timeZone: 'UTC'
     };
     return date.toLocaleDateString(undefined, options);
   };
@@ -166,7 +166,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
                     {formatDate(race.start_time)}
                   </Typography>
                   <Typography variant="body2" component="div">
-                    {race.track?.track_name || 'Unknown Track'}
+                    {race.track?.track_name || 'Track not available'}
                   </Typography>
                 </Box>
               </Button>
@@ -174,7 +174,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
           ))}
         </List>
       ) : (
-        <Typography sx={{ color: theme.palette.text.primary }}>No races found for this season.</Typography>
+        <Typography sx={{ color: theme.palette.text.primary }}>No upcoming races found for this season.</Typography>
       )}
     </Box>
   );
