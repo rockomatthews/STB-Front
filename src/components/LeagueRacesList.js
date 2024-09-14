@@ -91,7 +91,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
       minute: '2-digit',
       timeZone: 'UTC'
     };
-    return date.toLocaleDateString(undefined, options);
+    return date.toLocaleString(undefined, options);
   };
 
   if (loading) {
@@ -109,6 +109,8 @@ const LeagueRacesList = ({ onRaceSelect }) => {
       </Box>
     );
   }
+
+  const upcomingRaces = races.filter(race => new Date(race.start_time) > new Date());
 
   return (
     <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
@@ -145,9 +147,9 @@ const LeagueRacesList = ({ onRaceSelect }) => {
         <Typography sx={{ color: theme.palette.text.primary }}>No seasons available.</Typography>
       )}
 
-      {races.length > 0 ? (
+      {upcomingRaces.length > 0 ? (
         <List>
-          {races.map((race) => (
+          {upcomingRaces.map((race) => (
             <ListItem key={race.subsession_id} sx={{ padding: 0, marginBottom: 1 }}>
               <Button
                 onClick={() => handleRaceClick(race)}
