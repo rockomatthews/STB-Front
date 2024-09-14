@@ -52,7 +52,8 @@ const LeagueRacesList = ({ onRaceSelect }) => {
         try {
           setLoading(true);
           const response = await axios.get(`https://stb-back-etjo.onrender.com/api/league-subsessions?seasonId=${selectedSeason}`);
-          if (response.data && Array.isArray(response.data.sessions)) {
+          if (response.data && response.data.sessions) {
+            console.log('Received races:', response.data.sessions);
             setRaces(response.data.sessions);
           } else {
             setError('Received unexpected data format for races');
@@ -78,11 +79,14 @@ const LeagueRacesList = ({ onRaceSelect }) => {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'Date not available';
+    
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
       console.error('Invalid date:', dateString);
-      return 'Date not available';
+      return 'Invalid Date';
     }
+    
     const options = { 
       year: 'numeric', 
       month: 'long', 
@@ -110,7 +114,10 @@ const LeagueRacesList = ({ onRaceSelect }) => {
     );
   }
 
-  const upcomingRaces = races.filter(race => new Date(race.start_time) > new Date());
+  const upcomingRaces = races.filter(race => {
+    const raceDate = new Date(race.start_time);
+    return !isNaN(raceDate.getTime()) && raceDate > new Date();
+  });
 
   return (
     <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
