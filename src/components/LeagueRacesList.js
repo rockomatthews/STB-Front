@@ -52,7 +52,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
         try {
           setLoading(true);
           const response = await axios.get(`https://stb-back-etjo.onrender.com/api/league-subsessions?seasonId=${selectedSeason}`);
-          if (response.data && response.data.sessions) {
+          if (response.data && Array.isArray(response.data.sessions)) {
             console.log('Received races:', response.data.sessions);
             setRaces(response.data.sessions);
           } else {
@@ -114,9 +114,10 @@ const LeagueRacesList = ({ onRaceSelect }) => {
     );
   }
 
+  const currentDate = new Date();
   const upcomingRaces = races.filter(race => {
-    const raceDate = new Date(race.start_time);
-    return !isNaN(raceDate.getTime()) && raceDate > new Date();
+    const raceDate = new Date(race.launch_at);
+    return !isNaN(raceDate.getTime()) && raceDate > currentDate;
   });
 
   return (
@@ -172,10 +173,10 @@ const LeagueRacesList = ({ onRaceSelect }) => {
               >
                 <Box>
                   <Typography variant="body1" component="div">
-                    {formatDate(race.start_time)}
+                    {formatDate(race.launch_at)}
                   </Typography>
                   <Typography variant="body2" component="div">
-                    {race.track?.track_name || 'Track not available'}
+                    {race.track.track_name}
                   </Typography>
                 </Box>
               </Button>
