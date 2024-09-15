@@ -12,6 +12,7 @@ import {
   useTheme,
   Button
 } from '@mui/material';
+import SportsMotorsportsIcon from '@mui/icons-material/SportsMotorsports';
 import axios from 'axios';
 
 const LeagueRacesList = ({ onRaceSelect }) => {
@@ -171,13 +172,19 @@ const LeagueRacesList = ({ onRaceSelect }) => {
                   },
                 }}
               >
-                <Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
                   <Typography variant="body1" component="div">
                     {formatDate(race.launch_at)}
                   </Typography>
                   <Typography variant="body2" component="div">
                     {race.track.track_name}
                   </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                    <SportsMotorsportsIcon sx={{ mr: 1, fontSize: 20 }} />
+                    <Typography variant="body2" component="span">
+                      {race.entry_count} drivers
+                    </Typography>
+                  </Box>
                 </Box>
               </Button>
             </ListItem>
