@@ -106,7 +106,7 @@ const RaceDetails = ({ race }) => {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <SportsMotorsportsIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
               <Typography variant="body1" sx={{ color: theme.palette.text.primary }}>
-                {race.entry_count || 0} Drivers Registered
+                {roster.length} Drivers Registered
               </Typography>
             </Box>
           </Grid>
@@ -170,7 +170,7 @@ const RaceDetails = ({ race }) => {
 
         <Box sx={{ mt: 4 }}>
           <Typography variant="h6" sx={{ color: theme.palette.text.primary, mb: 1 }}>
-            Registered Drivers
+            Registered Drivers ({roster.length})
           </Typography>
           <List>
             {roster.map((driver) => (
