@@ -183,7 +183,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                     <SportsMotorsportsIcon sx={{ mr: 1, fontSize: 20 }} />
                     <Typography variant="body2" component="span">
-                      {race.entry_count} drivers
+                      {race.rosterCount || 0} drivers
                     </Typography>
                     {race.status === 2 && (
                       <Chip 
