@@ -10,7 +10,8 @@ import {
   FormControl, 
   InputLabel,
   useTheme,
-  Button
+  Button,
+  Chip
 } from '@mui/material';
 import SportsMotorsportsIcon from '@mui/icons-material/SportsMotorsports';
 import axios from 'axios';
@@ -118,7 +119,7 @@ const LeagueRacesList = ({ onRaceSelect }) => {
   const currentDate = new Date();
   const upcomingRaces = races.filter(race => {
     const raceDate = new Date(race.launch_at);
-    return !isNaN(raceDate.getTime()) && raceDate > currentDate;
+    return !isNaN(raceDate.getTime()) && (raceDate > currentDate || race.status === 2);
   });
 
   return (
@@ -184,6 +185,17 @@ const LeagueRacesList = ({ onRaceSelect }) => {
                     <Typography variant="body2" component="span">
                       {race.entry_count} drivers
                     </Typography>
+                    {race.status === 2 && (
+                      <Chip 
+                        label="In Practice" 
+                        size="small" 
+                        sx={{ 
+                          ml: 1, 
+                          backgroundColor: theme.palette.warning.main,
+                          color: theme.palette.warning.contrastText
+                        }} 
+                      />
+                    )}
                   </Box>
                 </Box>
               </Button>
